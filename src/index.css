@@ -1,0 +1,7 @@
+/* FILE: src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small customizations */
+.container{ max-width: 960px; }

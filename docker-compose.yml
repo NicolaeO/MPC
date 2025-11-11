@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  mpc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mpc
+    ports:
+      - "8080:80"          # Access at http://localhost:8080
+    restart: unless-stopped
+    volumes:
+      - ./public/posts:/app/public/posts   # Optional: lets you edit posts locally
+    environment:
+      - NODE_ENV=production
