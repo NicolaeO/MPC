@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+app/node_modules
 
 # build output
 /build
@@ -25,3 +26,24 @@ yarn-error.log*
 .vscode/
 *.tsbuildinfo
 coverage/
+
+# Python
+/__pycache__/* 
+*__pycache__/**
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+.env/
