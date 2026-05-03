@@ -1,9 +1,110 @@
-<!-- FILE: public/posts/index.json -->
 [
+  {
+    "slug": "2026-01-25-understanding-us-work-culture",
+    "title": "Understanding US Work Culture: What No One Tells You Before You Start",
+    "date": "2026-01-25",
+    "excerpt": "Work culture in the US can feel surprising even for experienced professionals from other countries — the communication style, the pace, the unspoken expectation"
+  },
+  {
+    "slug": "2026-01-20-how-to-find-a-job-in-the-usa",
+    "title": "How to Find a Job in the USA: Resume, LinkedIn, and the Hidden Job Market",
+    "date": "2026-01-20",
+    "excerpt": "The US job market operates differently from most countries — networking matters more than anywhere else, resumes follow a specific format, and most jobs are fil"
+  },
+  {
+    "slug": "2026-01-15-sending-money-internationally",
+    "title": "How to Send Money Back Home: Comparing the Best International Transfer Services",
+    "date": "2026-01-15",
+    "excerpt": "Sending money to family in Moldova or elsewhere internationally is a regular need for many immigrants — and choosing the wrong service can cost you 3–7% of ever"
+  },
+  {
+    "slug": "2026-01-10-how-to-get-a-us-drivers-license",
+    "title": "How to Get a US Drivers License as an Immigrant",
+    "date": "2026-01-10",
+    "excerpt": "In most of the US, having a car is not a luxury — it is a necessity. Getting a driver's license is one of the first practical milestones after arriving, and whi"
+  },
+  {
+    "slug": "2026-01-05-health-insurance-in-the-usa",
+    "title": "Health Insurance in the USA: Plans, Terms, and How to Choose",
+    "date": "2026-01-05",
+    "excerpt": "Healthcare in the US is expensive without insurance — a single ER visit can cost $3,000–$10,000, and a surgery can run $50,000 or more. Understanding how health"
+  },
+  {
+    "slug": "2025-12-28-renting-your-first-apartment",
+    "title": "Renting Your First Apartment in the USA: What to Expect and How to Prepare",
+    "date": "2025-12-28",
+    "excerpt": "Finding and securing your first apartment in the US involves more steps than in most other countries — credit checks, background screenings, proof of income, an"
+  },
+  {
+    "slug": "2025-12-22-first-steps-when-you-arrive-in-usa",
+    "title": "First Steps When You Arrive in the USA: Your Checklist for the First 30 Days",
+    "date": "2025-12-22",
+    "excerpt": "The first month in the US can feel overwhelming — there is so much to set up at once. This checklist walks you through every essential step in priority order, s"
+  },
+  {
+    "slug": "2025-12-20-loans-and-credit-cards",
+    "title": "Loans and Credit Cards in the USA: How to Apply and What to Watch Out For",
+    "date": "2025-12-20",
+    "excerpt": "Whether you need a credit card to start building credit or a loan for a car, knowing how to apply and what to watch out for can save you thousands of dollars in"
+  },
+  {
+    "slug": "2025-12-15-building-your-credit-score",
+    "title": "Building Your Credit Score from Scratch in the USA",
+    "date": "2025-12-15",
+    "excerpt": "When you arrive in the US, you do not have bad credit — you have no credit history at all. This is a blank slate, and with the right moves you can build a good "
+  },
+  {
+    "slug": "2025-12-10-how-to-open-a-bank-account",
+    "title": "How to Open a Bank Account in the USA as a Newcomer",
+    "date": "2025-12-10",
+    "excerpt": "One of the very first things you need in the US is a bank account — you need it to receive your paycheck, pay rent, and build your financial life. The process i"
+  },
+  {
+    "slug": "2025-12-05-choosing-a-bank-in-the-usa",
+    "title": "Choosing the Right Bank in the USA: Big Banks, Credit Unions, and Online Banks",
+    "date": "2025-12-05",
+    "excerpt": "Picking the right bank is one of the first and most important financial decisions you will make in the US. The options range from giant national banks to small "
+  },
+  {
+    "slug": "2025-12-02-hsa-and-fsa-explained",
+    "title": "HSA and FSA Explained: Tax-Free Money for Healthcare Costs",
+    "date": "2025-12-02",
+    "excerpt": "The US healthcare system is expensive, but two special accounts — HSA and FSA — let you pay for medical expenses with pre-tax dollars, effectively giving you a "
+  },
+  {
+    "slug": "2025-11-28-401k-and-ira-explained",
+    "title": "401(k) and IRA Explained: How to Save for Retirement in the USA",
+    "date": "2025-11-28",
+    "excerpt": "Retirement accounts in the US offer powerful tax advantages that can save you tens of thousands of dollars over a career. Understanding how a 401(k) and IRA wor"
+  },
+  {
+    "slug": "2025-11-25-understanding-your-paycheck",
+    "title": "Understanding Your Paycheck: Gross Pay, Deductions, and What You Actually Take Home",
+    "date": "2025-11-25",
+    "excerpt": "Your first US paycheck can be confusing — you earn $4,000 a month but only $2,800 lands in your account. Here is a breakdown of every deduction and why it exist"
+  },
+  {
+    "slug": "2025-11-20-understanding-us-taxes",
+    "title": "Understanding US Taxes: A Guide for Immigrants and New Professionals",
+    "date": "2025-11-20",
+    "excerpt": "The US tax system can feel overwhelming when you first arrive, but once you understand the basics you will realize it is manageable. This guide covers everythin"
+  },
+  {
+    "slug": "2025-11-16-careers-you-can-start-with-a-course",
+    "title": "Careers You Can Start With Just a Course or Bootcamp",
+    "date": "2025-11-16",
+    "excerpt": ""
+  },
   {
     "slug": "example-post",
     "title": "How to prepare a US-style resume",
     "date": "2025-11-01",
-    "excerpt": "A quick guide for Moldovan professionals to format resumes for the US market..."
+    "excerpt": "Short excerpt: A quick guide for Moldovan professionals to format resumes for the US market..."
+  },
+  {
+    "slug": "index",
+    "title": "index.html",
+    "date": "index.html",
+    "excerpt": ""
   }
 ]

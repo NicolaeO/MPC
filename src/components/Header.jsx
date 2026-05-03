@@ -19,6 +19,7 @@ export default function Header(){
           <NavLink to="/articles" className={({isActive})=> isActive? 'text-indigo-600 font-medium':'text-gray-600'}>Articles</NavLink>
           <NavLink to="/jobs" className={({isActive})=> isActive? 'text-indigo-600 font-medium':'text-gray-600'}>Jobs</NavLink>
           <NavLink to="/about" className={({isActive})=> isActive? 'text-indigo-600 font-medium':'text-gray-600'}>About</NavLink>
+          <NavLink to="/author" className={({isActive})=> isActive? 'text-indigo-600 font-medium':'text-gray-600'}>About Me</NavLink>
         </nav>
       </div>
     </header>
