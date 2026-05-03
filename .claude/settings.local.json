@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(node *)",
+      "Bash(npm install *)",
+      "PowerShell(python -m py_compile \"D:\\\\projects\\\\MPC\\\\app\\\\main.py\"; python -m py_compile \"D:\\\\projects\\\\MPC\\\\app\\\\lib\\\\generate.py\"; python -m py_compile \"D:\\\\projects\\\\MPC\\\\app\\\\lib\\\\github.py\"; python -m py_compile \"D:\\\\projects\\\\MPC\\\\app\\\\lib\\\\template.py\"; python -m py_compile \"D:\\\\projects\\\\MPC\\\\app\\\\lib\\\\topics.py\"; Write-Host \"All files OK\")"
+    ]
+  }
+}

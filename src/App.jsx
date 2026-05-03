@@ -9,6 +9,7 @@ import Home from './pages/Home'
 import Articles from './pages/Articles'
 import Jobs from './pages/Jobs'
 import About from './pages/About'
+import Author from './pages/Author'
 import PostView from './pages/PostView'
 
 export default function App(){
@@ -21,6 +22,7 @@ export default function App(){
           <Route path="/articles" element={<Articles/>} />
           <Route path="/jobs" element={<Jobs/>} />
           <Route path="/about" element={<About/>} />
+          <Route path="/author" element={<Author/>} />
           <Route path="/post/:slug" element={<PostView/>} />
         </Routes>
       </main>
