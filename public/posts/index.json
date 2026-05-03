@@ -1,5 +1,11 @@
 [
   {
+    "slug": "2026-05-03-understanding-mortgage-interest",
+    "title": "Understanding Mortgage Interest: How It Works and What You Actually Pay",
+    "date": "2026-05-03",
+    "excerpt": "A mortgage is likely the largest financial commitment of your life — and the interest you pay on top of the loan can easily exceed the price of the home itself."
+  },
+  {
     "slug": "2026-01-25-understanding-us-work-culture",
     "title": "Understanding US Work Culture: What No One Tells You Before You Start",
     "date": "2026-01-25",
@@ -100,11 +106,5 @@
     "title": "How to prepare a US-style resume",
     "date": "2025-11-01",
     "excerpt": "Short excerpt: A quick guide for Moldovan professionals to format resumes for the US market..."
-  },
-  {
-    "slug": "index",
-    "title": "index.html",
-    "date": "index.html",
-    "excerpt": ""
   }
 ]
