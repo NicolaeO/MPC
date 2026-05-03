@@ -34,13 +34,19 @@ body {
 }
 
 .row {
-  display: flex;
-  justify-content: space-around;
-  flex-flow: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+/* Grid controls sizing — override any inline widths on cards inside a row */
+.row .card {
+  width: 100% !important;
+  margin-bottom: 0;
 }
 
 .card {
-  width: 20%;
   background: #fff;
   border: 1px solid #ccc;
   margin-bottom: 50px;
@@ -83,8 +89,8 @@ body {
 /* Responsive media queries */
 
 @media screen and (max-width: 1000px) {
-  .card {
-    width: 40%;
+  .row {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -98,8 +104,8 @@ body {
     font-size: 30px;
   }
 
-  .card {
-    width: 80%;
+  .row {
+    grid-template-columns: 1fr;
   }
 }
 
