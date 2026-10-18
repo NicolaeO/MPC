@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mpc:
     build:
@@ -10,6 +8,6 @@ services:
       - "8080:80"          # Access at http://localhost:8080
     restart: unless-stopped
     volumes:
-      - ./public/posts:/app/public/posts   # Optional: lets you edit posts locally
-    environment:
-      - NODE_ENV=production
+      # Optional: serve posts live from your working copy.
+      # Run `npm run generate-posts-index` after adding or editing a post.
+      - ./public/posts:/usr/share/nginx/html/posts:ro

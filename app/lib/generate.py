@@ -30,8 +30,11 @@ Respond ONLY with a JSON object in this exact format (no markdown, no extra text
   "title": "The full article title",
   "slug_suffix": "short-url-slug-no-spaces-no-apostrophes",
   "intro": "One sentence summary used as the post excerpt",
+  "category": "Exactly one of: Finance, Career, Housing, Settling In, Health",
   "content": "<h2>First Section</h2><p>Full article HTML here...</p>"
 }}"""
+
+CATEGORIES = {"Finance", "Career", "Housing", "Settling In", "Health"}
 
 
 def generate_post(override_topic: str | None = None) -> dict:
@@ -74,6 +77,7 @@ def generate_post(override_topic: str | None = None) -> dict:
         "date": today,
         "slug": slug,
         "intro": parsed["intro"],
+        "category": parsed.get("category") if parsed.get("category") in CATEGORIES else "General",
         "content": parsed["content"],
         "usage": {
             "input_tokens": response.usage.input_tokens,

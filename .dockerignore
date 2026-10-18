@@ -1,0 +1,9 @@
+# Keep the host's node_modules out of the image: platform-specific binaries
+# (esbuild, rollup) built for the host would overwrite the Alpine ones.
+node_modules
+dist
+.git
+app
+.claude
+*.log
+.env*

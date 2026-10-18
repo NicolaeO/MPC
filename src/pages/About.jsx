@@ -1,4 +1,8 @@
+// FILE: src/pages/About.jsx
 import React, { useState } from 'react'
+import Icon from '../components/Icon'
+import { LogoMark } from '../components/Logo'
+import { useDocumentTitle } from '../lib/hooks'
 
 // ─── Contact form ────────────────────────────────────────────────────────────
 // 1. Go to https://formspree.io and create a free account
@@ -6,11 +10,13 @@ import React, { useState } from 'react'
 // 3. Replace the string below with your endpoint
 const FORMSPREE_URL = 'https://formspree.io/f/xrejewle'
 
+const EMPTY = { name: '', email: '', message: '', _gotcha: '' }
+
 function ContactForm() {
-  const [fields, setFields] = useState({ name: '', email: '', message: '' })
+  const [fields, setFields] = useState(EMPTY)
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
 
-  const handleChange = (e) => setFields({ ...fields, [e.target.name]: e.target.value })
+  const handleChange = (e) => setFields((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,7 +29,7 @@ function ContactForm() {
       })
       if (res.ok) {
         setStatus('sent')
-        setFields({ name: '', email: '', message: '' })
+        setFields(EMPTY)
       } else {
         setStatus('error')
       }
@@ -34,13 +40,13 @@ function ContactForm() {
 
   if (status === 'sent') {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <div className="text-green-600 font-semibold text-lg mb-1">Message sent!</div>
-        <p className="text-green-700 text-sm">Thanks for reaching out — I will get back to you soon.</p>
-        <button
-          onClick={() => setStatus('idle')}
-          className="mt-4 text-sm text-green-700 underline"
-        >
+      <div className="animate-scale-in rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center dark:border-emerald-500/30 dark:bg-emerald-500/10">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white">
+          <Icon name="check" strokeWidth={2.5} />
+        </div>
+        <div className="mt-4 text-lg font-semibold text-emerald-800 dark:text-emerald-200">Message sent!</div>
+        <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-300">Thanks for reaching out — I will get back to you soon.</p>
+        <button onClick={() => setStatus('idle')} className="mt-5 text-sm font-medium text-emerald-700 underline underline-offset-4 dark:text-emerald-300">
           Send another message
         </button>
       </div>
@@ -48,41 +54,23 @@ function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">
+          <label className="label" htmlFor="name">
             Name
           </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            value={fields.name}
-            onChange={handleChange}
-            placeholder="Your name"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+          <input id="name" name="name" type="text" autoComplete="name" required value={fields.name} onChange={handleChange} placeholder="Your name" className="field" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
+          <label className="label" htmlFor="email">
             Email
           </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={fields.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+          <input id="email" name="email" type="email" autoComplete="email" required value={fields.email} onChange={handleChange} placeholder="you@example.com" className="field" />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="message">
+        <label className="label" htmlFor="message">
           Message
         </label>
         <textarea
@@ -93,122 +81,112 @@ function ContactForm() {
           value={fields.message}
           onChange={handleChange}
           placeholder="What would you like to ask or share?"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+          className="field resize-y"
         />
       </div>
+      {/* Honeypot: hidden from people, filled in by bots — Formspree drops those submissions. */}
+      <input type="text" name="_gotcha" value={fields._gotcha} onChange={handleChange} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       {status === 'error' && (
-        <p className="text-red-600 text-sm">Something went wrong. Please try again or email directly.</p>
+        <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300" role="alert">
+          Something went wrong. Please try again in a moment.
+        </p>
       )}
-      <button
-        type="submit"
-        disabled={status === 'sending'}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
-      >
-        {status === 'sending' ? 'Sending…' : 'Send Message'}
+      <button type="submit" disabled={status === 'sending'} className="btn-primary w-full py-3">
+        {status === 'sending' ? (
+          'Sending…'
+        ) : (
+          <>
+            <Icon name="mail" className="h-4 w-4" /> Send message
+          </>
+        )}
       </button>
     </form>
   )
 }
 
-// ─── Feature card ─────────────────────────────────────────────────────────────
-function Feature({ icon, title, description }) {
-  return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex gap-4">
-      <div className="w-11 h-11 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0 text-indigo-600">
-        {icon}
-      </div>
-      <div>
-        <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-        <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
-      </div>
-    </div>
-  )
-}
+const FEATURES = [
+  {
+    icon: 'document',
+    title: 'Practical Articles',
+    description: 'In-depth guides on taxes, banking, credit scores, mortgages, retirement accounts, and everything else the US financial system throws at you.',
+  },
+  {
+    icon: 'briefcase',
+    title: 'Career Guidance',
+    description: 'How the US job market works, how to write an American-style resume, navigate LinkedIn, negotiate salary, and understand work culture.',
+  },
+  {
+    icon: 'home',
+    title: 'Settling In',
+    description: 'Step-by-step guides for newcomers — getting your SSN, opening a bank account, renting your first apartment, and getting a driver’s license.',
+  },
+  {
+    icon: 'users',
+    title: 'Community',
+    description: 'A growing platform for Moldovan and Eastern European professionals to share knowledge, find jobs, and support each other.',
+  },
+]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function About() {
+  useDocumentTitle('About')
   return (
-    <div className="max-w-3xl mx-auto">
-
+    <div className="page max-w-4xl animate-fade-in pt-10 sm:pt-14">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl px-8 py-12 text-white text-center mb-10">
-        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold mx-auto mb-5">
-          M
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-950 px-6 py-14 text-center text-white shadow-lift sm:px-12">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-sun-400/20 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-64 w-64 rounded-full bg-sky-400/20 blur-3xl" aria-hidden="true" />
+        <div className="relative">
+          <LogoMark className="mx-auto h-16 w-16 text-2xl" />
+          <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">Moldovan Professionals Chicago</h1>
+          <p className="mx-auto mt-4 max-w-xl leading-relaxed text-brand-100">
+            A community platform built to help Moldovan professionals and immigrants in the USA navigate their new life —
+            from taxes and banking to careers and housing.
+          </p>
         </div>
-        <h1 className="text-3xl font-bold mb-3">Moldovan Professionals Chicago</h1>
-        <p className="text-blue-100 text-base max-w-xl mx-auto leading-relaxed">
-          A community platform built to help Moldovan professionals and immigrants in the USA
-          navigate their new life — from taxes and banking to careers and housing.
-        </p>
       </section>
 
       {/* Mission */}
-      <section className="mb-10">
-        <h2 className="text-xl font-bold text-gray-900 mb-3">Our Mission</h2>
-        <p className="text-gray-600 leading-relaxed">
-          Moving to a new country is hard. Understanding how everything works — the financial system,
-          the job market, healthcare, legal requirements — takes years of trial and error. MPC exists
-          to shorten that learning curve. We share practical, honest guides written by people who have
-          been through it, so you can make informed decisions from day one.
+      <section className="mt-16">
+        <div className="eyebrow">Why we exist</div>
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Our Mission</h2>
+        <p className="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+          Moving to a new country is hard. Understanding how everything works — the financial system, the job market,
+          healthcare, legal requirements — takes years of trial and error. MPC exists to shorten that learning curve. We
+          share practical, honest guides written by people who have been through it, so you can make informed decisions
+          from day one.
         </p>
       </section>
 
       {/* What we offer */}
-      <section className="mb-10">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">What We Offer</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Feature
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            }
-            title="Practical Articles"
-            description="In-depth guides on taxes, banking, credit scores, mortgages, retirement accounts, and everything else the US financial system throws at you."
-          />
-          <Feature
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            }
-            title="Career Guidance"
-            description="How the US job market works, how to write an American-style resume, navigate LinkedIn, negotiate salary, and understand work culture."
-          />
-          <Feature
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            }
-            title="Settling In"
-            description="Step-by-step guides for newcomers — getting your SSN, opening a bank account, renting your first apartment, and getting a driver's license."
-          />
-          <Feature
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            }
-            title="Community"
-            description="A growing platform for Moldovan and Eastern European professionals to share knowledge, find jobs, and support each other."
-          />
+      <section className="mt-16">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">What We Offer</h2>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="surface flex gap-4 p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
+                <Icon name={f.icon} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{f.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Divider */}
-      <hr className="border-gray-200 mb-10" />
-
       {/* Contact */}
-      <section className="mb-10">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Get in Touch</h2>
-        <p className="text-gray-600 text-sm mb-6">
-          Have a question, a topic suggestion, or want to contribute an article?
-          Send a message and I will get back to you.
-        </p>
-        <ContactForm />
+      <section id="contact" className="mt-16 scroll-mt-24">
+        <div className="surface p-6 sm:p-10">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Get in Touch</h2>
+          <p className="mb-8 mt-2 text-slate-600 dark:text-slate-400">
+            Have a question, a topic suggestion, a job to share, or want to contribute an article? Send a message and I
+            will get back to you.
+          </p>
+          <ContactForm />
+        </div>
       </section>
-
     </div>
   )
 }

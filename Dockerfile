@@ -7,16 +7,13 @@ WORKDIR /app
 # Copy package files first (better caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install exact versions from package-lock.json
+RUN npm ci
 
 # Copy the rest of the source
 COPY . .
 
-# Generate posts index (optional but useful)
-RUN npm run generate-posts-index || true
-
-# Build static site
+# Build static site (the prebuild step regenerates public/posts/index.json)
 RUN npm run build
 
 
@@ -28,6 +25,9 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# SPA routing + caching rules
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

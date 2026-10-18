@@ -1,85 +1,134 @@
+// FILE: server.js
+// Cloudflare Worker: accepts an article submission and opens a GitHub pull request with it.
+//
+// Environment:
+//   GITHUB_TOKEN    (secret) token with contents + pull-request write access
+//   REPO            "owner/name"
+//   BRANCH_BASE     branch to open PRs against (default "master")
+//   ALLOWED_ORIGIN  site origin allowed to call this worker (default "*")
+
+const API = 'https://api.github.com'
+const CATEGORIES = ['Finance', 'Career', 'Housing', 'Settling In', 'Health']
+
+const escapeHtml = (s) =>
+  String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+
+// btoa() only accepts Latin-1, so encode to UTF-8 first (ă, î, ș, ț, em dashes…).
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str)
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(binary)
+}
+
+function slugify(title) {
+  const slug = title
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/, '')
+  return slug || 'post'
+}
+
 export default {
   async fetch(request, env) {
-    if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
+    const cors = {
+      'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+    const json = (body, status = 200) =>
+      new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } })
+
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors })
+    if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
+
+    let payload
+    try {
+      payload = await request.json()
+    } catch {
+      return json({ error: 'Invalid JSON body' }, 400)
     }
 
-    const { name, email, title, content } = await request.json();
-
-    if (!name || !email || !title || !content) {
-      return new Response('Missing fields', { status: 400 });
+    const { name, email, title, content, category, excerpt } = payload || {}
+    if (![name, email, title, content].every((v) => typeof v === 'string' && v.trim())) {
+      return json({ error: 'Missing fields: name, email, title and content are required' }, 400)
     }
+    if (title.length > 200 || content.length > 100_000) return json({ error: 'Submission too large' }, 413)
 
-    const repo = env.REPO; // e.g. "your-user/mpc-site"
-    const githubToken = env.GITHUB_TOKEN;
-    const baseBranch = env.BRANCH_BASE || 'main';
-    const apiBase = 'https://api.github.com';
-
-    // 1. Create a new branch
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    const date = new Date().toISOString().split('T')[0];
-    const branchName = `submit-${date}-${slug}`;
-
-    // Get latest commit SHA of base branch
-    const refRes = await fetch(`${apiBase}/repos/${repo}/git/ref/heads/${baseBranch}`, {
-      headers: { Authorization: `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    const refJson = await refRes.json();
-    const baseSha = refJson.object.sha;
-
-    // Create new branch ref
-    await fetch(`${apiBase}/repos/${repo}/git/refs`, {
-      method: 'POST',
-      headers: { Authorization: `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' },
-      body: JSON.stringify({
-        ref: `refs/heads/${branchName}`,
-        sha: baseSha
+    const gh = async (path, init = {}) => {
+      const res = await fetch(`${API}/repos/${env.REPO}${path}`, {
+        ...init,
+        headers: {
+          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'User-Agent': 'mpc-post-submission-worker', // GitHub rejects requests without one
+          ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+        },
       })
-    });
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(`GitHub ${res.status} on ${init.method || 'GET'} ${path}: ${data.message || 'request failed'}`)
+      return data
+    }
 
-    // 2. Create a new file in posts folder  
-    const path = `public/posts/${date}-${slug}.html`;
-    const contentHtml = `<!doctype html>
+    const baseBranch = env.BRANCH_BASE || 'master'
+    const date = new Date().toISOString().slice(0, 10)
+    const slug = `${date}-${slugify(title)}`
+    const branch = `submit/${slug}-${Date.now().toString(36)}` // unique even for same-day resubmissions
+    const filePath = `public/posts/${slug}.html`
+    const safeTitle = escapeHtml(title.trim())
+    const safeCategory = CATEGORIES.includes(category) ? category : 'General'
+
+    // The submitter's email goes in the PR only — never into the public page.
+    // `content` is the author's HTML and is published as-is, so it MUST be reviewed in the PR.
+    const html = `<!doctype html>
 <html>
 <head>
-  <meta name="title" content="${title}">
-  <meta name="date" content="${date}">
+    <meta name="title" content="${safeTitle}">
+    <meta name="date" content="${date}">
+    <meta name="category" content="${safeCategory}">
+    <meta name="excerpt" content="${escapeHtml(typeof excerpt === 'string' ? excerpt.trim() : '')}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-  <h2>${title}</h2>
-  <p>Submitted by ${name} (${email})</p>
-  <div>${content}</div>
+<div class="container">
+    <div class="heading">
+        <h1>${safeTitle}</h1>
+        <p>Submitted by ${escapeHtml(name.trim())}</p>
+    </div>
+    ${content}
+</div>
 </body>
 </html>
-`;
-    const encoded = btoa(contentHtml);
+`
 
-    await fetch(`${apiBase}/repos/${repo}/contents/${path}`, {
-      method: 'PUT',
-      headers: { Authorization: `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' },
-      body: JSON.stringify({
-        message: `Add new post: ${title}`,
-        content: encoded,
-        branch: branchName
+    try {
+      const ref = await gh(`/git/ref/heads/${baseBranch}`)
+      await gh('/git/refs', { method: 'POST', body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: ref.object.sha }) })
+      await gh(`/contents/${filePath}`, {
+        method: 'PUT',
+        body: JSON.stringify({ message: `Add post submission: ${title.trim()}`, content: toBase64(html), branch }),
       })
-    });
-
-    // 3. Create a Pull Request
-    const prRes = await fetch(`${apiBase}/repos/${repo}/pulls`, {
-      method: 'POST',
-      headers: { Authorization: `token ${githubToken}`, 'Accept': 'application/vnd.github.v3+json' },
-      body: JSON.stringify({
-        title: `New post submission: ${title}`,
-        head: branchName,
-        base: baseBranch,
-        body: `Submitted by ${name} (${email})\n\nPlease review the post.`
+      const pr = await gh('/pulls', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: `New post submission: ${title.trim()}`,
+          head: branch,
+          base: baseBranch,
+          body:
+            `Submitted by ${name.trim()} (${email.trim()}).\n\n` +
+            'The article HTML is rendered on the site as-is. Before merging, check it for scripts, iframes, ' +
+            'inline event handlers and broken markup, and fill in the category and excerpt meta tags.',
+        }),
       })
-    });
-    const prJson = await prRes.json();
-
-    return new Response(JSON.stringify({ success:true, prUrl: prJson.html_url }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 201
-    });
-  }
+      return json({ success: true, prUrl: pr.html_url }, 201)
+    } catch (err) {
+      return json({ success: false, error: err.message }, 502)
+    }
+  },
 }
